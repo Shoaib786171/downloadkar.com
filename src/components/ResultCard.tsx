@@ -872,9 +872,20 @@ export default function ResultCard({
           {/* Video Metadata Information */}
           <div className="md:col-span-7 flex flex-col justify-center space-y-3">
             <div className="space-y-1.5">
-              <span className="text-xs font-semibold text-rose-600 dark:text-rose-400">
-                {metadata.platformName} Media
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-rose-600 dark:text-rose-400">
+                  {metadata.platformName} Media
+                </span>
+                {metadata.uploadedFileId ? (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+                    Direct FFmpeg Engine
+                  </span>
+                ) : metadata.isPlatformRestricted ? (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">
+                    Platform Protected
+                  </span>
+                ) : null}
+              </div>
               <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug">
                 {metadata.title}
               </h2>
@@ -898,6 +909,19 @@ export default function ResultCard({
                 </>
               )}
             </div>
+
+            {metadata.isPlatformRestricted && (
+              <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 rounded-xl text-xs text-amber-800 dark:text-amber-300 space-y-1">
+                <div className="flex items-center gap-1.5 font-bold">
+                  <Info className="w-3.5 h-3.5 shrink-0" />
+                  <span>Platform Terms & Copyright Notice</span>
+                </div>
+                <p className="text-[11px] leading-relaxed">
+                  {metadata.complianceNotice ||
+                    'Under platform terms of service, third-party offline downloads require creator authorization. You can also upload your own media file or Creative Commons video to convert and trim with our FFmpeg engine.'}
+                </p>
+              </div>
+            )}
 
             {/* Action buttons: Downloads & Preview toggle */}
             <div className="pt-2 flex flex-col sm:flex-row flex-wrap gap-2.5">

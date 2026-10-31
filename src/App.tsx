@@ -20,8 +20,8 @@ import LegalModals, { LegalType } from './components/LegalModals';
 import Footer from './components/Footer';
 
 import { BackendApiConfig, DownloadHistoryItem, TrimRange, VideoFormatOption, VideoMetadata } from './types/downloader';
-import { detectPlatform, fetchVideoData } from './services/api';
-import { generateSampleMediaBlob, sanitizeFilename, triggerBrowserDownload } from './services/downloader';
+import { detectPlatform, fetchVideoData, uploadUserMediaFile } from './services/api';
+import { sanitizeFilename, triggerBrowserDownload } from './services/downloader';
 import { safeJsonParse, requestRateLimiter, validateAndSanitizeUrl, sanitizeText } from './services/security';
 import { useLanguage } from './context/LanguageContext';
 
@@ -138,6 +138,27 @@ export default function App() {
     handleFetch(sampleUrl);
   };
 
+  // Handle User Media File Upload (video / audio file for genuine FFmpeg processing)
+  const handleUploadFile = async (file: File) => {
+    setIsLoading(true);
+    setErrorMessage(null);
+    try {
+      const data = await uploadUserMediaFile(file);
+      setVideoData(data);
+      setUrl('');
+      setTimeout(() => {
+        const resultEl = document.getElementById('result-section');
+        if (resultEl) {
+          resultEl.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to upload and probe media file.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Download Trigger Handler
   const handleDownloadFormat = (
     format: VideoFormatOption,
@@ -174,7 +195,7 @@ export default function App() {
     }
   };
 
-  // Re-download from history
+  // Re-download from history via genuine download engine
   const handleReDownload = (item: DownloadHistoryItem) => {
     const mockFormat: VideoFormatOption = {
       id: item.id,
@@ -196,8 +217,7 @@ export default function App() {
       formats: [mockFormat],
       fetchedAt: item.downloadedAt,
     };
-    const blob = generateSampleMediaBlob(mockFormat, mockMetadata);
-    triggerBrowserDownload(blob, sanitizeFilename(item.title, item.extension));
+    setActiveDownload({ format: mockFormat, metadata: mockMetadata });
   };
 
   return (
@@ -209,13 +229,15 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1">
-        {/* Hero Section with URL Input */}
+        {/* Hero Section with URL Input and Local File Upload */}
         <HeroSearch
           url={url}
           setUrl={setUrl}
           detectedPlatform={detectedPlatform}
           isLoading={isLoading}
           onFetch={() => handleFetch()}
+          onUploadFile={handleUploadFile}
+          isUploading={isLoading}
           errorMessage={errorMessage}
           onClearError={() => setErrorMessage(null)}
         />

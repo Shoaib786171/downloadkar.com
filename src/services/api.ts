@@ -176,6 +176,99 @@ export function extractVideoId(url: string, platform: PlatformType): string | nu
  * Asynchronous function to fetch video data from a URL.
  * Hardened with zero-trust input validation, anti-XSS, and scheme blocking.
  */
+/**
+ * Uploads a local user video or audio file for genuine FFmpeg processing
+ */
+export async function uploadUserMediaFile(file: File): Promise<VideoMetadata> {
+  const formData = new FormData();
+  formData.append('mediaFile', file);
+
+  const response = await fetch('/api/upload', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `Upload failed (HTTP ${response.status})`);
+  }
+
+  const data = await response.json();
+  const probe = data.probe || {};
+  const isAudioOnly = !probe.hasVideo && probe.hasAudio;
+
+  const videoFormats: VideoFormatOption[] = isAudioOnly
+    ? []
+    : [
+        {
+          id: 'mp4-1080p',
+          label: '1080p Full HD (FFmpeg Transcode)',
+          quality: '1080p',
+          type: 'video',
+          extension: 'mp4',
+          fileSize: `${Math.max(1, Math.round(file.size / (1024 * 1024)))} MB`,
+          hasAudio: true,
+        },
+        {
+          id: 'mp4-720p',
+          label: '720p HD (Balanced Compression)',
+          quality: '720p',
+          type: 'video',
+          extension: 'mp4',
+          fileSize: `${Math.max(1, Math.round((file.size * 0.6) / (1024 * 1024)))} MB`,
+          hasAudio: true,
+        },
+        {
+          id: 'mp4-480p',
+          label: '480p Mobile (Compact MP4)',
+          quality: '480p',
+          type: 'video',
+          extension: 'mp4',
+          fileSize: `${Math.max(1, Math.round((file.size * 0.35) / (1024 * 1024)))} MB`,
+          hasAudio: true,
+        },
+      ];
+
+  const audioFormats: VideoFormatOption[] = [
+    {
+      id: 'mp3-320',
+      label: '320 kbps (High Fidelity MP3)',
+      quality: '320kbps',
+      type: 'audio',
+      extension: 'mp3',
+      fileSize: `${Math.max(1, Math.round((probe.durationSeconds || 60) * 0.04))} MB`,
+    },
+    {
+      id: 'mp3-192',
+      label: '192 kbps (Standard MP3)',
+      quality: '192kbps',
+      type: 'audio',
+      extension: 'mp3',
+      fileSize: `${Math.max(1, Math.round((probe.durationSeconds || 60) * 0.024))} MB`,
+    },
+  ];
+
+  return {
+    id: `upload_${data.fileId}`,
+    originalUrl: `local://${data.fileId}`,
+    uploadedFileId: data.fileId,
+    platform: 'unknown',
+    platformName: 'Uploaded Media',
+    title: data.originalName,
+    author: 'Local File',
+    duration: probe.durationFormatted || '01:00',
+    views: 'Local File',
+    publishDate: 'Uploaded just now',
+    thumbnailUrl: SAMPLE_THUMBNAILS.youtube,
+    formats: [...videoFormats, ...audioFormats],
+    fetchedAt: Date.now(),
+    probeInfo: probe,
+  };
+}
+
+/**
+ * Asynchronous function to inspect media data from a URL or backend inspector.
+ */
 export async function fetchVideoData(
   url: string,
   config: BackendApiConfig = { mode: 'mock', customEndpoint: '' }
@@ -188,45 +281,81 @@ export async function fetchVideoData(
 
   const sanitizedUrl = validation.sanitizedUrl;
   const platform = detectPlatform(sanitizedUrl);
+
+  // 2. Query our real backend /api/media/inspect endpoint
+  try {
+    const inspectResponse = await fetch('/api/media/inspect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: sanitizedUrl }),
+    });
+
+    if (inspectResponse.ok) {
+      const inspectData = await inspectResponse.json();
+
+      // If backend probed a direct media stream
+      if (inspectData.platform === 'direct' && inspectData.probe) {
+        const probe = inspectData.probe;
+        const videoFormats: VideoFormatOption[] = [
+          {
+            id: 'direct-mp4',
+            label: 'Transcode to MP4 (1080p / 720p)',
+            quality: '1080p',
+            type: 'video',
+            extension: 'mp4',
+            fileSize: `${(probe.sizeBytes / (1024 * 1024)).toFixed(1)} MB`,
+            hasAudio: probe.hasAudio,
+          },
+          {
+            id: 'direct-mp3',
+            label: 'Extract Audio (320kbps MP3)',
+            quality: '320kbps',
+            type: 'audio',
+            extension: 'mp3',
+            fileSize: `${Math.max(1, Math.round((probe.durationSeconds || 60) * 0.04))} MB`,
+          },
+        ];
+
+        return {
+          id: `media_${Date.now().toString(36)}`,
+          originalUrl: sanitizedUrl,
+          platform: 'unknown',
+          platformName: 'Direct Media Stream',
+          title: (sanitizedUrl.split('/').pop() || 'Media Stream').split('?')[0] || 'Media Stream',
+          author: 'Web Media Source',
+          duration: probe.durationFormatted || '00:00',
+          thumbnailUrl: SAMPLE_THUMBNAILS.youtube,
+          formats: videoFormats,
+          fetchedAt: Date.now(),
+          probeInfo: probe,
+        };
+      }
+
+      // If backend resolved oEmbed data (e.g. YouTube, Vimeo)
+      if (inspectData.title) {
+        const id = extractVideoId(sanitizedUrl, platform) || `media_${Date.now().toString(36)}`;
+        const base = buildMockVideoResponse(sanitizedUrl, platform, id);
+        return {
+          ...base,
+          title: inspectData.title || base.title,
+          author: inspectData.author || base.author,
+          thumbnailUrl: inspectData.thumbnailUrl || base.thumbnailUrl,
+          isPlatformRestricted: inspectData.isPlatformRestricted,
+          complianceNotice: inspectData.complianceNotice,
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('Backend inspect query failed, falling back to client parser:', err);
+  }
+
   if (platform === 'unknown') {
     throw new Error(
-      'Unsupported URL or platform. Please paste a valid link from YouTube, Instagram, TikTok, Facebook, or Vimeo.'
+      'Unsupported URL or platform. Please paste a valid link from YouTube, Instagram, TikTok, Facebook, or Vimeo, or upload a media file.'
     );
   }
 
-  // If developer configured a custom backend, execute real network request
-  if (config.mode === 'custom' && config.customEndpoint) {
-    try {
-      const response = await fetch(config.customEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(config.rapidApiKey ? { 'X-RapidAPI-Key': config.rapidApiKey } : {}),
-        },
-        body: JSON.stringify({ url: sanitizedUrl }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Custom backend returned HTTP ${response.status}`);
-      }
-
-      const data: VideoMetadata = await response.json();
-      return data;
-    } catch (err: any) {
-      console.warn('Custom backend failed, falling back to mock parser for demo:', err.message);
-      // If custom backend errors, we throw to notify user or provide clear message
-      throw new Error(`Backend Connection Error: ${err.message}. Please verify your API URL or switch to Demo Mock Mode.`);
-    }
-  }
-
-  // SIMULATED EXTRACTION LATENCY & HANDSHAKE
-  // Simulates the 1.2s round-trip time needed by yt-dlp or third-party scraper
-  await new Promise((resolve) => setTimeout(resolve, 1200));
-
   const id = extractVideoId(sanitizedUrl, platform) || `media_${Date.now().toString(36)}`;
-
-  // Construct platform-specific mock results
   return buildMockVideoResponse(sanitizedUrl, platform, id);
 }
 

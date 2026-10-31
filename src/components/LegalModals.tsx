@@ -12,73 +12,108 @@ export default function LegalModals({ type, onClose }: LegalModalsProps) {
 
   const content = {
     privacy: {
-      title: 'Privacy Policy',
+      title: 'Privacy Policy & Data Retention',
       icon: Shield,
       updated: 'October 2026',
       body: (
         <div className="space-y-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
           <p>
-            Welcome to <strong>downloadkar</strong>. We are committed to protecting your privacy and ensuring you have complete transparency regarding how data is handled when you use our website.
+            Welcome to <strong>downloadkar</strong>. We are committed to transparency regarding how data is handled, processed, and stored when you use our website and media conversion services.
           </p>
-          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">1. Zero Logging Policy</h4>
+
+          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">1. Ephemeral Media Processing</h4>
           <p>
-            downloadkar does not store, host, or archive the videos, reels, or audio files you process through our service. We do not maintain server-side logs correlating user IP addresses with specific media URLs converted.
+            Media files uploaded or processed through downloadkar are stored strictly in an isolated temporary processing directory (<code className="px-1 py-0.5 bg-slate-100 dark:bg-slate-800 rounded font-mono text-[11px]">/tmp/downloadkar_jobs</code>). All input files, intermediate chunks, and generated outputs are automatically deleted by a scheduled server cleaner within <strong>15 minutes</strong> of creation. We do not maintain persistent archives of user media.
           </p>
-          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">2. Local Browser Storage</h4>
+
+          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">2. Server Logs and Diagnostic Information</h4>
           <p>
-            Your recent download history is stored solely inside your browser&apos;s local storage (LocalStorage). This data never leaves your device and can be cleared at any time via the History panel.
+            Our web servers maintain standard ephemeral technical access logs (including request timestamps, HTTP status codes, and anonymized IP addresses) solely for operational security, anti-abuse rate limiting, and system troubleshooting. These diagnostic logs are rotated and discarded automatically.
           </p>
-          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">3. Cookies and Analytics</h4>
+
+          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">3. Local Browser Storage (LocalStorage)</h4>
           <p>
-            We use minimal technical cookies strictly necessary to maintain basic session state. We do not sell or trade user data to third-party ad networks or brokers.
+            Your optional recent download history and theme preferences are stored exclusively on your device within your browser&apos;s LocalStorage. This information is never transmitted to our servers and can be wiped instantly by clearing your browser data or using the Clear History button.
+          </p>
+
+          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">4. Contact Inquiries</h4>
+          <p>
+            When you submit a message through our Contact form, your email address, inquiry topic, and message are recorded to allow our support team to respond. We never sell, rent, or distribute contact details to third-party advertisers or brokers.
           </p>
         </div>
       ),
     },
     terms: {
-      title: 'Terms of Service',
+      title: 'Terms of Service & Acceptable Use',
       icon: FileText,
       updated: 'October 2026',
       body: (
         <div className="space-y-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
           <p>
-            By accessing or using <strong>downloadkar</strong>, you agree to comply with and be bound by the following terms and conditions.
+            By accessing or using <strong>downloadkar</strong>, you agree to comply with and be bound by these Terms of Service.
           </p>
-          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">1. Authorized Personal Use</h4>
+
+          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">1. Permitted and Authorized Use</h4>
           <p>
-            downloadkar is designed strictly as a personal utility to extract stream formats from publicly accessible content for personal archival, educational study, or fair use purposes.
+            downloadkar provides media transcoding, audio extraction, video trimming, and watermarking utilities. You agree to use this service exclusively for media content that you own, have created, or for which you hold express authorization, valid license, or legal permission from the copyright owner.
           </p>
-          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">2. Intellectual Property Rights</h4>
+
+          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">2. Prohibited Activities</h4>
           <p>
-            Users agree not to use downloadkar to infringe upon copyrights, trademarks, or proprietary rights of content creators. You are solely responsible for ensuring you have the legal right or license to download any specific media file.
+            You agree NOT to use downloadkar to:
           </p>
-          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">3. Service Availability</h4>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Circumvent Digital Rights Management (DRM), authentication gates, paywalls, or encryption mechanisms.</li>
+            <li>Infringe upon the intellectual property, copyright, trademark, or privacy rights of any third party.</li>
+            <li>Conduct denial-of-service (DoS) attacks, flood requests, or attempt Server-Side Request Forgery (SSRF).</li>
+            <li>Process, transcode, or transmit unlawful, defamatory, or abusive material.</li>
+          </ul>
+
+          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">3. Platform Policies and Technical Limitations</h4>
           <p>
-            downloadkar is provided &quot;as is&quot; without warranties of any kind. We do not guarantee uninterrupted uptime or continuous compatibility with changing third-party media platforms.
+            Major platforms (including YouTube, Meta, TikTok, and Vimeo) maintain terms restricting automated stream scraping. Where an authorized API or direct public media stream is unavailable, downloadkar respects platform restrictions and does not bypass access controls.
+          </p>
+
+          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">4. Disclaimer of Warranties</h4>
+          <p>
+            downloadkar is provided on an &quot;as is&quot; and &quot;as available&quot; basis without warranties of uninterrupted uptime or error-free processing. We reserve the right to restrict service access to prevent system abuse.
           </p>
         </div>
       ),
     },
     disclaimer: {
-      title: 'Disclaimer',
+      title: 'Disclaimer & DMCA Takedown Procedure',
       icon: AlertTriangle,
       updated: 'October 2026',
       body: (
         <div className="space-y-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
           <p>
-            <strong>downloadkar</strong> operates strictly as an independent stream analysis and utility tool.
+            <strong>downloadkar</strong> operates as an independent media utility and conversion technology provider.
           </p>
-          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">1. No Affiliation with Third-Party Platforms</h4>
+
+          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">1. No Third-Party Platform Affiliation</h4>
           <p>
-            downloadkar is NOT affiliated, associated, authorized, endorsed by, or in any way officially connected with YouTube, Google LLC, Meta Platforms Inc. (Facebook, Instagram), ByteDance Ltd. (TikTok), Vimeo Inc., or X Corp. (Twitter).
+            downloadkar is NOT affiliated with, authorized, endorsed by, or officially associated with YouTube, Google LLC, Meta Platforms Inc. (Facebook, Instagram), ByteDance Ltd. (TikTok), Vimeo Inc., or X Corp. (Twitter). All platform brand names, trademarks, and logos are property of their respective holders and are referenced purely for technical compatibility and descriptive purposes.
           </p>
-          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">2. Trademarks</h4>
+
+          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">2. DMCA & Copyright Complaint Procedure</h4>
           <p>
-            All registered product names, platform logos, and trademarks mentioned on this website belong exclusively to their respective owners. Their mention is strictly for informational and compatibility purposes.
+            downloadkar respects the rights of copyright owners and operates in compliance with applicable intellectual property laws. If you believe your copyrighted work is being processed or referenced in violation of your rights, please submit a written notice to our designated contact through the Contact Form or by emailing our administration.
           </p>
-          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">3. DMCA & Copyright Takedowns</h4>
           <p>
-            If you are a copyright holder with inquiries or concerns, please contact our support team through the Contact form. Because downloadkar does not host or store any media files, stream links originate directly from the host providers.
+            Your notice must include:
+          </p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Identification of the copyrighted work claimed to have been infringed.</li>
+            <li>Specific URL or reference to the material in question.</li>
+            <li>Your contact information (name, address, telephone number, and email address).</li>
+            <li>A statement of good faith belief that the disputed use is not authorized by the copyright owner, its agent, or the law.</li>
+            <li>A statement made under penalty of perjury that the information in the notification is accurate and that you are authorized to act on behalf of the copyright owner.</li>
+          </ul>
+
+          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">3. Legal Review Notice</h4>
+          <p>
+            The legal disclaimers herein do not constitute legal advice. Users are advised to review the intellectual property laws of their respective jurisdictions.
           </p>
         </div>
       ),

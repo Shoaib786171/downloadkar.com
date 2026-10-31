@@ -62,6 +62,27 @@ export interface VideoMetadata {
   thumbnailUrl: string;
   formats: VideoFormatOption[];
   fetchedAt: number;
+  uploadedFileId?: string;
+  isPlatformRestricted?: boolean;
+  complianceNotice?: string;
+  probeInfo?: any;
+}
+
+export interface ConversionJobResponse {
+  jobId: string;
+  status: 'queued' | 'processing' | 'completed' | 'failed' | 'cancelled';
+  filename: string;
+}
+
+export interface JobStatusResponse {
+  id: string;
+  status: 'queued' | 'processing' | 'completed' | 'failed' | 'cancelled';
+  progress: number;
+  step: string;
+  error?: string;
+  fileSizeBytes: number;
+  outputFilename: string;
+  downloadUrl?: string;
 }
 
 export interface DownloadHistoryItem {

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Search, Clipboard, X, Loader2, Sparkles, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Search, Clipboard, X, Loader2, Sparkles, AlertCircle, CheckCircle2, Upload, Film } from 'lucide-react';
 import { PlatformType } from '../types/downloader';
 import { PLATFORM_DETECTORS } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
@@ -10,6 +10,8 @@ interface HeroSearchProps {
   detectedPlatform: PlatformType;
   isLoading: boolean;
   onFetch: () => void;
+  onUploadFile?: (file: File) => void;
+  isUploading?: boolean;
   errorMessage: string | null;
   onClearError: () => void;
 }
@@ -20,12 +22,22 @@ export default function HeroSearch({
   detectedPlatform,
   isLoading,
   onFetch,
+  onUploadFile,
+  isUploading,
   errorMessage,
   onClearError,
 }: HeroSearchProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [pasteSuccess, setPasteSuccess] = useState(false);
   const { t } = useLanguage();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && onUploadFile) {
+      onUploadFile(file);
+    }
+  };
 
   const handlePaste = async () => {
     try {
@@ -174,6 +186,36 @@ export default function HeroSearch({
                 <span className="text-slate-500 hidden sm:inline">{t.streamReady}</span>
               </div>
             )}
+          </div>
+
+          {/* Local Media File Upload Option */}
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs">
+            <span className="text-slate-500 dark:text-slate-400">Want to trim or convert your own video/audio?</span>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="video/*,audio/*"
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoading || isUploading}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-rose-500 text-slate-800 dark:text-slate-200 font-semibold transition-all shadow-xs cursor-pointer disabled:opacity-50"
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-500" />
+                  <span>Probing File...</span>
+                </>
+              ) : (
+                <>
+                  <Upload className="w-3.5 h-3.5 text-rose-500" />
+                  <span>Upload Media to Convert / Trim</span>
+                </>
+              )}
+            </button>
           </div>
 
           {/* Error Message notification banner */}
