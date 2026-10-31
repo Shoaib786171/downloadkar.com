@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  html {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    scroll-behavior: smooth;
+  }
+}
+
+/* Midnight OLED True Black Theme */
+html.midnight {
+  color-scheme: dark;
+}
+
+html.midnight,
+html.midnight body {
+  background-color: #000000 !important;
+}
+
+html.midnight .bg-slate-950,
+html.midnight .dark\:bg-slate-950 {
+  background-color: #000000 !important;
+}
+
+html.midnight .bg-slate-900,
+html.midnight .dark\:bg-slate-900 {
+  background-color: #0a0a0c !important;
+}
+
+html.midnight .bg-slate-900\/50,
+html.midnight .dark\:bg-slate-900\/50 {
+  background-color: rgba(10, 10, 12, 0.6) !important;
+}
+
+html.midnight .bg-slate-900\/70,
+html.midnight .dark\:bg-slate-900\/70 {
+  background-color: rgba(10, 10, 12, 0.75) !important;
+}
+
+html.midnight .bg-slate-900\/80,
+html.midnight .dark\:bg-slate-900\/80 {
+  background-color: rgba(10, 10, 12, 0.88) !important;
+}
+
+html.midnight .bg-slate-950\/80,
+html.midnight .dark\:bg-slate-950\/80 {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+}
+
+html.midnight .bg-slate-950\/90,
+html.midnight .dark\:bg-slate-950\/90 {
+  background-color: rgba(0, 0, 0, 0.95) !important;
+}
+
+html.midnight .border-slate-800,
+html.midnight .dark\:border-slate-800 {
+  border-color: #1e1e24 !important;
+}
+
+html.midnight .border-slate-800\/80,
+html.midnight .dark\:border-slate-800\/80 {
+  border-color: rgba(30, 30, 36, 0.8) !important;
+}
+
+html.midnight .border-slate-800\/60,
+html.midnight .dark\:border-slate-800\/60 {
+  border-color: rgba(30, 30, 36, 0.6) !important;
+}
+
+html.midnight .bg-slate-800,
+html.midnight .dark\:bg-slate-800 {
+  background-color: #16161b !important;
+}
+
+html.midnight .bg-slate-800\/50,
+html.midnight .dark\:bg-slate-800\/50 {
+  background-color: rgba(22, 22, 27, 0.6) !important;
+}

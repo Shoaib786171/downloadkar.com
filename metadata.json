@@ -1,0 +1,6 @@
+{
+  "name": "downloadkar – Free All-in-One Video Downloader & MP3 Converter",
+  "description": "Download HD videos and extract 320kbps MP3 audio from YouTube, TikTok, Instagram, Facebook, and Vimeo. Fast, watermark-free, and 100% free with no registration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

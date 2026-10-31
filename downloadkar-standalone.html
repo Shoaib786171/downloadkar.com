@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>downloadkar – Free All-in-One Video Downloader &amp; MP3 Converter</title>
+  <meta name="description" content="Download HD videos and extract 320kbps MP3 audio from YouTube, TikTok, Instagram, Facebook, and Vimeo. Fast, watermark-free, and 100% free with no registration." />
+  <meta name="keywords" content="video downloader, youtube video downloader, tiktok video downloader without watermark, instagram reels downloader, mp3 converter, facebook video download, vimeo video downloader, downloadkar" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="author" content="downloadkar" />
+  <meta name="theme-color" content="#020617" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <!-- OpenGraph Social Sharing Metadata -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="downloadkar" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:title" content="downloadkar – Free All-in-One Video Downloader &amp; MP3 Converter" />
+  <meta property="og:description" content="Save high-speed MP4 videos and extract 320kbps MP3 audio from YouTube, TikTok, Instagram, Facebook, and Vimeo without watermarks." />
+
+  <!-- Twitter / X Social Cards -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="downloadkar – Free All-in-One Video Downloader &amp; MP3 Converter" />
+  <meta name="twitter:description" content="Download HD videos and extract 320kbps MP3 audio from YouTube, TikTok, Instagram, Facebook, and Vimeo. 100% free with no watermark." />
+
+  <!-- Schema.org JSON-LD Structured Data: WebApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "downloadkar",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All",
+    "description": "Fast, watermark-free multi-platform video downloader and high-bitrate MP3 audio converter for YouTube, TikTok, Instagram, Facebook, and Vimeo.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased selection:bg-rose-500/20 selection:text-rose-300 min-h-screen flex flex-col">
+
+  <!-- ================= HEADER ================= -->
+  <header class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-8">
+      <!-- Zone 1: Brand Wordmark -->
+      <a href="#" class="text-xl font-bold tracking-tight text-white flex items-center gap-2 group">
+        <span class="w-8 h-8 rounded-lg bg-rose-600 flex items-center justify-center text-white shadow-md shadow-rose-900/40">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+        </span>
+        <span class="text-xl font-extrabold tracking-tight">download<span class="text-rose-500">kar</span></span>
+      </a>
+
+      <!-- Zone 2: Navigation Links -->
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-300">
+        <a href="#hero" class="hover:text-white transition-colors">Home</a>
+        <a href="#how-it-works" class="hover:text-white transition-colors">How to Use</a>
+        <a href="#platforms" class="hover:text-white transition-colors">Supported Sites</a>
+        <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
+      </nav>
+
+      <!-- Zone 3: Primary Action, Language Selector & Theme Toggle -->
+      <div className="flex items-center gap-2 sm:gap-2.5">
+        <button
+          id="themeToggleBtn"
+          type="button"
+          onclick="toggleTheme()"
+          aria-label="Toggle light and dark theme"
+          class="p-2 bg-slate-900 border border-slate-700 text-slate-200 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+          title="Switch theme"
+        >
+          <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
+        <div class="relative">
+          <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-slate-900 border border-slate-700 text-xs font-semibold text-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-rose-500 cursor-pointer">
+            <option value="en">🇺🇸 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="hi">🇮🇳 हिन्दी</option>
+          </select>
+        </div>
+        <a href="#hero" class="px-3 py-1.5 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 rounded-lg transition-colors shadow-md shadow-rose-950/50">
+          Start Download
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="flex-1">
+    <!-- Hero Section -->
+    <section id="hero" class="relative pt-12 pb-8 px-4 sm:px-6 lg:px-8 text-center overflow-hidden">
+      <div class="max-w-4xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-xs text-slate-300 mb-6">
+          <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+          <span>High-Speed 4K MP4 & 320kbps MP3 Audio Extraction</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-4">
+          Free All-in-One <span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-pink-500 to-amber-400">Video Downloader</span>
+        </h1>
+
+        <p class="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto mb-8">
+          Paste any video link to instantly convert and save high-definition MP4 clips and MP3 audio tracks. No software installation, no watermarks, 100% free.
+        </p>
+
+        <!-- Search Input Bar -->
+        <div class="max-w-3xl mx-auto">
+          <div class="relative p-2 bg-slate-900/90 border border-slate-700/80 rounded-2xl shadow-2xl focus-within:border-rose-500/80 focus-within:ring-2 focus-within:ring-rose-500/20 transition-all">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <div class="flex-1 flex items-center px-3">
+                <svg class="w-5 h-5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input
+                  id="urlInput"
+                  type="url"
+                  placeholder="Paste video link here (YouTube, TikTok, Instagram, FB, Vimeo)..."
+                  class="w-full bg-transparent px-3 py-3 text-sm sm:text-base text-white placeholder-slate-500 focus:outline-none"
+                  autocomplete="off"
+                />
+                <button id="pasteBtn" type="button" class="px-2.5 py-1 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 rounded-md transition-colors">
+                  Paste
+                </button>
+              </div>
+              <button
+                id="fetchBtn"
+                type="button"
+                class="px-6 py-3.5 sm:py-3 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-500 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>Fetch Video</span>
+              </button>
+            </div>
+
+            <!-- Platform Detected Live Notification -->
+            <div id="platformBadge" class="hidden mt-2 pt-2 px-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                <span>Detected Platform:</span>
+                <span id="detectedPlatformText" class="font-semibold text-white capitalize">YouTube</span>
+              </div>
+              <span class="text-slate-500 hidden sm:inline">Ready to extract stream metadata</span>
+            </div>
+          </div>
+
+          <!-- Error Alert Banner -->
+          <div id="errorAlert" class="hidden mt-4 p-3.5 bg-rose-950/60 border border-rose-800 text-rose-200 text-sm rounded-xl text-left"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Supported Platforms -->
+    <section id="platforms" class="w-full max-w-3xl mx-auto px-4 pb-8">
+      <div class="text-center mb-3">
+        <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Supported Platforms — Click to test sample</span>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+        <button onclick="setSample('youtube')" class="p-3 rounded-xl border border-slate-800 bg-slate-900/60 hover:bg-slate-900 text-center transition-all">
+          <div class="text-xs font-semibold text-red-400">YouTube</div>
+          <div class="text-[11px] text-slate-500">MP4 & MP3</div>
+        </button>
+        <button onclick="setSample('instagram')" class="p-3 rounded-xl border border-slate-800 bg-slate-900/60 hover:bg-slate-900 text-center transition-all">
+          <div class="text-xs font-semibold text-pink-400">Instagram</div>
+          <div class="text-[11px] text-slate-500">Reels & Post</div>
+        </button>
+        <button onclick="setSample('tiktok')" class="p-3 rounded-xl border border-slate-800 bg-slate-900/60 hover:bg-slate-900 text-center transition-all">
+          <div class="text-xs font-semibold text-cyan-400">TikTok</div>
+          <div class="text-[11px] text-slate-500">No Watermark</div>
+        </button>
+        <button onclick="setSample('facebook')" class="p-3 rounded-xl border border-slate-800 bg-slate-900/60 hover:bg-slate-900 text-center transition-all">
+          <div class="text-xs font-semibold text-blue-400">Facebook</div>
+          <div class="text-[11px] text-slate-500">Watch & Reels</div>
+        </button>
+        <button onclick="setSample('vimeo')" class="p-3 rounded-xl border border-slate-800 bg-slate-900/60 hover:bg-slate-900 text-center transition-all">
+          <div class="text-xs font-semibold text-sky-400">Vimeo</div>
+          <div class="text-[11px] text-slate-500">1080p Master</div>
+        </button>
+      </div>
+    </section>
+
+    <!-- Dynamic Results Container -->
+    <section id="resultsContainer" class="hidden w-full max-w-4xl mx-auto px-4 sm:px-6 my-8">
+      <!-- Injected via JavaScript -->
+    </section>
+
+    <!-- How to Use Section -->
+    <section id="how-it-works" class="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-900 bg-slate-950/40">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <span class="text-xs font-bold uppercase tracking-wider text-rose-400 mb-2 block">Simple 3-Step Process</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white">How to Download Any Video in Seconds</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800">
+            <span class="font-mono text-2xl font-black text-rose-500/80 mb-2 block">01</span>
+            <h3 class="text-base font-bold text-white mb-2">Copy Video URL</h3>
+            <p class="text-xs text-slate-400">Copy the share link from YouTube, Instagram, TikTok, Facebook, or Vimeo.</p>
+          </div>
+          <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800">
+            <span class="font-mono text-2xl font-black text-rose-500/80 mb-2 block">02</span>
+            <h3 class="text-base font-bold text-white mb-2">Paste into downloadkar</h3>
+            <p class="text-xs text-slate-400">Paste the URL in the box above. The engine detects the platform automatically.</p>
+          </div>
+          <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800">
+            <span class="font-mono text-2xl font-black text-rose-500/80 mb-2 block">03</span>
+            <h3 class="text-base font-bold text-white mb-2">Select Format & Save</h3>
+            <p class="text-xs text-slate-400">Choose MP4 Video or MP3 Audio and download directly to your device.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="border-t border-slate-900 bg-slate-950 py-10 px-4 text-xs text-slate-400">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>Copyright © 2026 downloadkar. All rights reserved.</div>
+      <div class="flex gap-4">
+        <a href="#privacy" onclick="alert('Privacy Policy: downloadkar operates a zero-log policy. No videos or URLs are archived on our servers.'); return false;" class="hover:text-white">Privacy Policy</a>
+        <a href="#terms" onclick="alert('Terms of Service: downloadkar is intended for personal, non-commercial fair use only.'); return false;" class="hover:text-white">Terms of Service</a>
+        <a href="#disclaimer" onclick="alert('Disclaimer: downloadkar is not affiliated with YouTube, Meta, TikTok, or Vimeo.'); return false;" class="hover:text-white">Disclaimer</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    // Sample URLs for 1-click testing
+    const SAMPLE_URLS = {
+      youtube: 'https://www.youtube.com/watch?v=9bZkp7q19f0',
+      instagram: 'https://www.instagram.com/reel/CxkM40hLElE/',
+      tiktok: 'https://www.tiktok.com/@aesthetic/video/7391823901283921029',
+      facebook: 'https://www.facebook.com/watch?v=84920491820',
+      vimeo: 'https://vimeo.com/76979871'
+    };
+
+    const urlInput = document.getElementById('urlInput');
+    const fetchBtn = document.getElementById('fetchBtn');
+    const pasteBtn = document.getElementById('pasteBtn');
+    const platformBadge = document.getElementById('platformBadge');
+    const detectedPlatformText = document.getElementById('detectedPlatformText');
+    const errorAlert = document.getElementById('errorAlert');
+    const resultsContainer = document.getElementById('resultsContainer');
+
+    // -------------------------------------------------------------
+    // REQUIREMENT #5: URL DETECTION LOGIC USING REGEX
+    // -------------------------------------------------------------
+    function detectPlatform(url) {
+      const trimmed = url.trim();
+      if (!trimmed) return 'unknown';
+
+      if (/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i.test(trimmed)) return 'youtube';
+      if (/instagram\.com\/(?:p|reel|tv|reels)\/([a-zA-Z0-9_-]+)/i.test(trimmed)) return 'instagram';
+      if (/(?:tiktok\.com\/(?:@[\w.-]+\/video\/\d+|v\/\d+|t\/[a-zA-Z0-9]+)|vt\.tiktok\.com)/i.test(trimmed)) return 'tiktok';
+      if (/(?:facebook\.com\/(?:watch|reel|videos|share)|fb\.watch)/i.test(trimmed)) return 'facebook';
+      if (/vimeo\.com\/(\d+)/i.test(trimmed)) return 'vimeo';
+
+      return 'unknown';
+    }
+
+    urlInput.addEventListener('input', () => {
+      const platform = detectPlatform(urlInput.value);
+      if (platform !== 'unknown') {
+        platformBadge.classList.remove('hidden');
+        detectedPlatformText.textContent = platform;
+      } else {
+        platformBadge.classList.add('hidden');
+      }
+      errorAlert.classList.add('hidden');
+    });
+
+    pasteBtn.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          urlInput.value = text;
+          urlInput.dispatchEvent(new Event('input'));
+        }
+      } catch (e) {
+        urlInput.focus();
+      }
+    });
+
+    function setSample(platform) {
+      if (SAMPLE_URLS[platform]) {
+        urlInput.value = SAMPLE_URLS[platform];
+        urlInput.dispatchEvent(new Event('input'));
+        handleFetch();
+      }
+    }
+
+    // -------------------------------------------------------------
+    // REQUIREMENT #7: MOCK API INTEGRATION (Asynchronous fetchVideoData)
+    // -------------------------------------------------------------
+    /**
+     * Placeholder asynchronous function to fetch video download data.
+     * In your production backend:
+     * Replace this simulated delay with a call to your Node.js yt-dlp API or RapidAPI:
+     * 
+     * async function fetchVideoData(url) {
+     *   const res = await fetch('http://localhost:5000/api/fetch', {
+     *     method: 'POST',
+     *     headers: { 'Content-Type': 'application/json' },
+     *     body: JSON.stringify({ url })
+     *   });
+     *   return await res.json();
+     * }
+     */
+    async function fetchVideoData(url) {
+      const platform = detectPlatform(url);
+      if (platform === 'unknown') {
+        throw new Error('Please enter a valid link from YouTube, Instagram, TikTok, Facebook, or Vimeo.');
+      }
+
+      // Simulate network latency (1.2s)
+      await new Promise(resolve => setTimeout(resolve, 1200));
+
+      return {
+        platform,
+        title: platform === 'youtube'
+          ? 'Majestic Alpine Glacial Peaks & Turquoise Lake 4K Documentary'
+          : platform === 'tiktok'
+          ? 'Crispy Artisan Street Food Wok Stir-Fry with Fiery Herbs'
+          : platform === 'instagram'
+          ? 'Tokyo Street Culture & Creator Night Walks #tokyo'
+          : 'High Definition Creator Video',
+        author: '@creator_channel',
+        duration: '04:12',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
+        url
+      };
+    }
+
+    // -------------------------------------------------------------
+    // REQUIREMENT #6: DYNAMIC UI RESULTS CARD
+    // -------------------------------------------------------------
+    async function handleFetch() {
+      const url = urlInput.value.trim();
+      if (!url) {
+        showError('Please enter a video URL first.');
+        return;
+      }
+
+      fetchBtn.disabled = true;
+      fetchBtn.innerHTML = `<span>Fetching...</span>`;
+      errorAlert.classList.add('hidden');
+      resultsContainer.classList.add('hidden');
+
+      try {
+        const data = await fetchVideoData(url);
+        renderResultsCard(data);
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        fetchBtn.disabled = false;
+        fetchBtn.innerHTML = `<span>Fetch Video</span>`;
+      }
+    }
+
+    fetchBtn.addEventListener('click', handleFetch);
+    urlInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleFetch();
+    });
+
+    function showError(msg) {
+      errorAlert.textContent = msg;
+      errorAlert.classList.remove('hidden');
+    }
+
+    function renderResultsCard(data) {
+      const isYouTube = data.platform === 'youtube';
+
+      // YouTube has MP4 + MP3 buttons. Other platforms have MP4 button.
+      const actionButtons = isYouTube
+        ? `
+          <div class="flex flex-col sm:flex-row gap-3 pt-3">
+            <button onclick="downloadFile('${data.title}', 'mp4')" class="flex-1 py-3 px-4 bg-rose-600 hover:bg-rose-500 font-bold text-white rounded-xl text-sm transition-all shadow-md">
+              Download Video (MP4)
+            </button>
+            <button onclick="downloadFile('${data.title}', 'mp3')" class="flex-1 py-3 px-4 bg-amber-500 hover:bg-amber-400 font-bold text-slate-950 rounded-xl text-sm transition-all shadow-md">
+              Download Audio (MP3)
+            </button>
+          </div>
+        `
+        : `
+          <div class="flex flex-col sm:flex-row gap-3 pt-3">
+            <button onclick="downloadFile('${data.title}', 'mp4')" class="flex-1 py-3 px-4 bg-rose-600 hover:bg-rose-500 font-bold text-white rounded-xl text-sm transition-all shadow-md">
+              Download Video (MP4)
+            </button>
+            ${data.platform === 'tiktok' ? `
+              <button onclick="downloadFile('${data.title}_NoWatermark', 'mp4')" class="py-3 px-4 bg-cyan-600 hover:bg-cyan-500 font-bold text-white rounded-xl text-sm transition-all shadow-md">
+                No Watermark (MP4)
+              </button>
+            ` : ''}
+          </div>
+        `;
+
+      resultsContainer.innerHTML = `
+        <div class="bg-slate-900 border border-slate-700/80 rounded-2xl overflow-hidden shadow-2xl p-6">
+          <div class="flex items-center gap-2 mb-4 text-xs font-semibold text-rose-400 uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>Stream Ready · ${data.platform}</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            <div class="md:col-span-5 aspect-video rounded-xl bg-slate-950 overflow-hidden border border-slate-800">
+              <img src="${data.thumbnailUrl}" alt="Thumbnail" class="w-full h-full object-cover">
+            </div>
+            <div class="md:col-span-7 space-y-2">
+              <h2 class="text-xl font-bold text-white">${data.title}</h2>
+              <p class="text-xs text-slate-400">${data.author} · Duration: ${data.duration}</p>
+              ${actionButtons}
+
+              <!-- Share this tool section -->
+              <div class="mt-5 pt-4 border-t border-slate-800">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-rose-400">Share this tool</span>
+                    <p class="text-xs text-slate-400">Share with friends for fast, watermark-free downloads.</p>
+                  </div>
+                  <button id="standaloneCopyShare" onclick="copyReferralLink()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-800 border border-slate-700 hover:border-slate-600 text-slate-200 transition-all cursor-pointer">
+                    <span>Copy Referral Link</span>
+                  </button>
+                </div>
+                <div class="mt-3 flex flex-wrap items-center gap-2">
+                  <a href="https://api.whatsapp.com/send?text=${encodeURIComponent('Download watermark-free videos and MP3 audio with downloadkar: ' + window.location.href)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-emerald-950/60 border border-emerald-700/60 text-emerald-300 text-xs font-medium hover:bg-emerald-900/60 transition-all">WhatsApp</a>
+                  <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent('Free all-in-one video downloader & MP3 converter: ')}&url=${encodeURIComponent(window.location.href)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-xs font-medium hover:bg-slate-700 transition-all">Twitter / X</a>
+                  <a href="https://www.reddit.com/submit?url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent('downloadkar - Free All-in-One Video Downloader')}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-orange-950/60 border border-orange-700/60 text-orange-300 text-xs font-medium hover:bg-orange-900/60 transition-all">Reddit</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      resultsContainer.classList.remove('hidden');
+      resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyReferralLink() {
+      const shareUrl = window.location.origin + window.location.pathname + '?ref=share';
+      navigator.clipboard.writeText(shareUrl);
+      const btn = document.getElementById('standaloneCopyShare');
+      if (btn) {
+        btn.innerHTML = '<span>Referral Link Copied!</span>';
+        btn.classList.add('text-emerald-400', 'border-emerald-500');
+        setTimeout(() => {
+          btn.innerHTML = '<span>Copy Referral Link</span>';
+          btn.classList.remove('text-emerald-400', 'border-emerald-500');
+        }, 2000);
+      }
+    }
+
+    function downloadFile(title, extension) {
+      const filename = 'downloadkar_' + title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30) + '.' + extension;
+      const content = 'downloadkar video downloader export: ' + title + ' (' + extension.toUpperCase() + ')';
+      const blob = new Blob([content], { type: extension === 'mp3' ? 'audio/mpeg' : 'video/mp4' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function changeLanguage(lang) {
+      document.documentElement.lang = lang;
+      const dict = {
+        es: {
+          placeholder: 'Pega el enlace del video de YouTube, Instagram, TikTok...',
+          fetchBtn: 'Obtener video'
+        },
+        fr: {
+          placeholder: 'Collez le lien de la vidéo YouTube, Instagram, TikTok...',
+          fetchBtn: 'Obtenir la vidéo'
+        },
+        hi: {
+          placeholder: 'यूट्यूब, इंस्टाग्राम, टिकटॉक या फेसबुक का वीडियो लिंक पेस्ट करें...',
+          fetchBtn: 'वीडियो प्राप्त करें'
+        },
+        en: {
+          placeholder: 'Paste video link here (YouTube, TikTok, Instagram, FB, Vimeo)...',
+          fetchBtn: 'Fetch Video'
+        }
+      };
+      const t = dict[lang] || dict.en;
+      if (urlInput) urlInput.placeholder = t.placeholder;
+      if (fetchBtn) fetchBtn.innerHTML = `<span>${t.fetchBtn}</span>`;
+    }
+  </script>
+</body>
+</html>
