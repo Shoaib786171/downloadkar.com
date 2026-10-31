@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Download, CheckCircle2, Loader2, X, FileVideo, Music, Shield, Cpu, Layers, Scissors } from 'lucide-react';
+import { Download, CheckCircle2, Loader2, X, FileVideo, Music, Shield, Cpu, Layers, Scissors, Image as ImageIcon } from 'lucide-react';
 import { TrimRange, VideoFormatOption, VideoMetadata } from '../types/downloader';
 import { generateSampleMediaBlob, sanitizeFilename, triggerBrowserDownload } from '../services/downloader';
 
@@ -130,14 +130,25 @@ export default function DownloadModal({
               {filename}
             </p>
 
-            {trimRange && trimRange.enabled && (
-              <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-500/15 border border-rose-200 dark:border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-semibold">
-                <Scissors className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
-                <span>
-                  Clip: {trimRange.startFormatted} - {trimRange.endFormatted} ({trimRange.durationFormatted})
-                </span>
-              </div>
-            )}
+            <div className="flex flex-wrap items-center justify-center gap-1.5 mt-2">
+              {trimRange && trimRange.enabled && (
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-500/15 border border-rose-200 dark:border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-semibold">
+                  <Scissors className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+                  <span>
+                    Clip: {trimRange.startFormatted} - {trimRange.endFormatted} ({trimRange.durationFormatted})
+                  </span>
+                </div>
+              )}
+
+              {trimRange?.pictureOverlay?.enabled && (
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-200 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300 text-xs font-semibold">
+                  <ImageIcon className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                  <span>
+                    Framed Picture: {trimRange.pictureOverlay.frameStyle} ({trimRange.pictureOverlay.position})
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Stepper Phase Indicators */}

@@ -19,6 +19,24 @@ export interface VideoFormatOption {
   noWatermark?: boolean;
 }
 
+export type PicturePosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'center';
+
+export type PictureFrameStyle = 'none' | 'polaroid' | 'circle' | 'glass' | 'neon' | 'badge';
+
+export type PictureTiming = 'all' | 'intro' | 'outro';
+
+export interface PictureFrameOverlay {
+  enabled: boolean;
+  imageUrl: string;
+  imageName?: string;
+  position: PicturePosition;
+  frameStyle: PictureFrameStyle;
+  scale: number; // 10 to 50 percent
+  opacity: number; // 0.1 to 1.0
+  rotation: number; // -45 to 45 degrees
+  timing: PictureTiming;
+}
+
 export interface TrimRange {
   enabled: boolean;
   startSeconds: number;
@@ -27,6 +45,7 @@ export interface TrimRange {
   endFormatted: string;
   durationSeconds: number;
   durationFormatted: string;
+  pictureOverlay?: PictureFrameOverlay;
 }
 
 export interface VideoMetadata {

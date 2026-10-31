@@ -16,6 +16,9 @@ export function sanitizeFilename(
     const s = trimRange.startFormatted.replace(/:/g, 'm') + 's';
     const e = trimRange.endFormatted.replace(/:/g, 'm') + 's';
     baseTitle = `${title}_clip_${s}-${e}`;
+    if (trimRange.pictureOverlay?.enabled) {
+      baseTitle += '_framed';
+    }
   }
   return sanitizeFilenameSecure(baseTitle, extension);
 }
@@ -48,6 +51,11 @@ export function generateSampleMediaBlob(
       ? `Trim Segment: ${trimRange.startFormatted} -> ${trimRange.endFormatted} (Duration: ${trimRange.durationFormatted})`
       : 'Trim Segment: Full Video (No Trim)';
 
+  const pictureOverlayDetails =
+    trimRange?.pictureOverlay?.enabled
+      ? `Picture in Frames: Attached [Style: ${trimRange.pictureOverlay.frameStyle}, Position: ${trimRange.pictureOverlay.position}, Scale: ${trimRange.pictureOverlay.scale}%, Opacity: ${Math.round(trimRange.pictureOverlay.opacity * 100)}%, Timing: ${trimRange.pictureOverlay.timing}]`
+      : 'Picture in Frames: None';
+
   const headerText = [
     `--- downloadkar High-Speed Media Export ---`,
     `Platform: ${metadata.platformName}`,
@@ -56,6 +64,7 @@ export function generateSampleMediaBlob(
     `Format: ${format.label} (${format.quality})`,
     `Type: ${format.type.toUpperCase()} .${format.extension}`,
     `${trimDetails}`,
+    `${pictureOverlayDetails}`,
     `Timestamp: ${new Date().toISOString()}`,
     `Status: Verified Safe & DRM-Free Stream Extraction`,
     `Website: https://downloadkar.local`,
