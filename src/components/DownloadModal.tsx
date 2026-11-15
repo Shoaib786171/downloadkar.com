@@ -4,8 +4,6 @@ import {
   CheckCircle2,
   Loader2,
   X,
-  FileVideo,
-  Music,
   Shield,
   Cpu,
   Layers,
@@ -31,6 +29,8 @@ interface DownloadModalProps {
   onRecordHistory: (format: VideoFormatOption, metadata: VideoMetadata) => void;
 }
 
+const WAIT_EMOJIS = ['⏳', '🤖', '⚙️', '📥', '🎬', '✨', '🚀', '🧠', '🎞️', '💾'];
+
 export default function DownloadModal({
   format,
   metadata,
@@ -45,9 +45,19 @@ export default function DownloadModal({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
+  const [waitEmoji, setWaitEmoji] = useState(0);
 
   const filename = sanitizeFilename(metadata.title, format.extension, trimRange);
   const pollTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cycle waiting emojis while the job is preparing/processing
+  useEffect(() => {
+    if (status !== 'preparing' && status !== 'processing') return;
+    const timer = setInterval(() => {
+      setWaitEmoji((i) => (i + 1) % WAIT_EMOJIS.length);
+    }, 700);
+    return () => clearInterval(timer);
+  }, [status]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -153,10 +163,12 @@ export default function DownloadModal({
               <CheckCircle2 className="w-9 h-9 text-emerald-600 dark:text-emerald-400 animate-in zoom-in-75 duration-300" />
             ) : status === 'failed' ? (
               <AlertCircle className="w-9 h-9 text-rose-600 dark:text-rose-400 animate-in zoom-in-75 duration-300" />
-            ) : format.type === 'video' ? (
-              <FileVideo className="w-8 h-8 text-rose-600 dark:text-rose-400 animate-bounce" />
+            ) : status === 'cancelled' ? (
+              <X className="w-9 h-9 text-slate-400 dark:text-slate-500" />
             ) : (
-              <Music className="w-8 h-8 text-amber-500 dark:text-amber-400 animate-bounce" />
+              <span className="text-4xl leading-none animate-bounce select-none" role="img" aria-label="working">
+                {WAIT_EMOJIS[waitEmoji]}
+              </span>
             )}
           </div>
 
@@ -253,7 +265,14 @@ export default function DownloadModal({
             <div className="space-y-2 text-left bg-slate-50 dark:bg-slate-950/60 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
               <div className="flex justify-between items-center text-xs">
                 <span className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 truncate max-w-[280px]">
-                  {status !== 'completed' && <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-500 shrink-0" />}
+                  {(status === 'preparing' || status === 'processing') && (
+                    <>
+                      <span className="text-base leading-none animate-bounce shrink-0" role="img" aria-label="working">
+                        {WAIT_EMOJIS[waitEmoji]}
+                      </span>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-500 shrink-0" />
+                    </>
+                  )}
                   <span className="truncate">{stepMessage}</span>
                 </span>
                 <span className="text-base font-extrabold tabular-nums font-mono text-rose-600 dark:text-rose-400 shrink-0 ml-2">
@@ -319,6 +338,11 @@ export default function DownloadModal({
             ) : (
               <div className="flex items-center justify-between pt-1">
                 <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                  {(status === 'preparing' || status === 'processing') && (
+                    <span className="text-sm leading-none animate-bounce" role="img" aria-label="working">
+                      {WAIT_EMOJIS[waitEmoji]}
+                    </span>
+                  )}
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
                   <span>Real-time FFmpeg worker</span>
                 </div>

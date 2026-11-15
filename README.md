@@ -1,23 +1,27 @@
-# DownloadKar — Professional Online Media Downloader & Video Converter
+# DownloadKar — All-in-One Video Downloader & Media Converter
 
-DownloadKar is a fast, secure, production-grade media processing web application powered by **React 19**, **TypeScript**, **Express**, and **native FFmpeg/ffprobe**.
+DownloadKar is a fast, full-stack media downloader and processing web app powered by **React 19**, **TypeScript**, **Express**, **yt-dlp**, and **native FFmpeg/ffprobe**.
 
-Users can convert video and audio files, extract high-bitrate MP3s (up to 320kbps), trim specific segments, add customized picture frame overlays, and inspect media metadata.
+Paste a link from YouTube, Facebook, Instagram, TikTok, Vimeo, X, and 1000+ other sites — or upload your own file — then pick a resolution (up to 1080p), trim clips, extract MP3 audio, or overlay picture frames.
 
 ---
 
 ## 🚀 Key Features
 
-- **Genuine FFmpeg Media Pipeline**: Real audio extraction (MP3 up to 320kbps), video transcoding (H.264/AAC MP4), trimming, and picture frame overlays.
-- **Accurate Real-Time Progress**: Conversion progress is computed dynamically from FFmpeg process stderr timestamps against total media duration.
-- **Video Trimmer with Preview**: Built-in HTML5 player preview with dual range sliders for start/end timestamps.
-- **Picture-in-Frame Overlay**: Select and overlay custom image frames onto video clips using FFmpeg filtergraphs.
-- **Direct Media Uploads**: Process user-owned video and audio files safely with automatic 15-minute file lifecycle cleanup.
-- **Platform Compliance**: Respects platform terms of service with official oEmbed metadata resolution and transparent compliance notices.
-- **4 Design Themes**: Slate Dark, Midnight Violet, Sunset Orange, and Clean Light.
-- **20 International Languages**: Instant locale switching with full i18n support.
-- **Enterprise Security**: SSRF prevention (blocking private and cloud metadata IPs), strict path sanitization, and server-side rate limiting.
-- **SEO Ready**: Canonical URL, OpenGraph cards, Twitter cards, Schema.org JSON-LD, `robots.txt`, and `sitemap.xml`.
+- **Platform Downloads via yt-dlp**: Resolves YouTube, Facebook Reels, Instagram Reels, TikTok, X, Vimeo, and thousands of other sites into local media automatically.
+- **Real Quality Picker**: Resolution options are built from the actual formats each video offers (capped at 1080p), plus MP3 audio at 320/256/192/128 kbps — with estimated file sizes.
+- **Smart Speed Pipeline**:
+  - Downloads are capped at your selected resolution (no more pulling 4K for a 480p request).
+  - H.264 (avc1) formats are preferred so FFmpeg can **remux instead of re-encode**.
+  - Plain MP4/MP3 downloads **skip FFmpeg entirely** — yt-dlp's output is delivered directly.
+  - Parallel fragment downloads (`-N 8`) for DASH/HLS sources.
+- **Browser-Cookie Fallback**: Platforms that require login (Facebook, Instagram, Vimeo) automatically retry using cookies from your locally installed browsers.
+- **Vimeo Fast Path**: Public Vimeo metadata (title, duration, resolution ladder) resolved via the legacy v2 API — no login needed for inspect/trim/quality selection.
+- **Video Trimmer**: Real duration metadata powers accurate start/end trim controls before any download happens.
+- **Picture-in-Frame Overlay**: Custom image frames composited onto video via FFmpeg filtergraphs.
+- **Genuine FFmpeg Engine**: Real transcoding, trimming, audio extraction, and progress parsed from FFmpeg stderr.
+- **Direct Media Uploads**: Process your own video/audio files with automatic cleanup.
+- **4 Design Themes** · **20 Languages** · **SEO Ready** (OG cards, JSON-LD, sitemap, robots.txt).
 
 ---
 
@@ -28,22 +32,24 @@ DownloadKar/
 ├── server.ts                  # Express server + Vite middlewares (Port 3000)
 ├── src/
 │   ├── server/               # Full-stack backend engine
-│   │   ├── ffmpeg.ts         # Native FFmpeg & ffprobe spawn runner + progress parsing
-│   │   ├── jobs.ts           # Asynchronous conversion job manager
-│   │   ├── cleanup.ts        # 15-minute TTL temporary file purger
+│   │   ├── ffmpeg.ts         # FFmpeg/ffprobe runner, arg builder, stream-copy fast path
+│   │   ├── ytdlp.ts          # yt-dlp downloader: progress, cancel, cookie fallback,
+│   │   │                     #   transient retry, resolution-capped format selection
+│   │   ├── jobs.ts           # Async job manager: yt-dlp → probe → FFmpeg/passthrough
+│   │   ├── cleanup.ts        # TTL-based temp file purger (15 min uploads / outputs)
 │   │   └── security.ts       # SSRF protection, IP rate limiting, path sanitization
 │   ├── components/           # React 19 UI components
 │   │   ├── Header.tsx        # Navigation, theme picker, language selector
 │   │   ├── HeroSearch.tsx    # Media URL input + direct file upload trigger
-│   │   ├── ResultCard.tsx    # Video player, trim sliders, frame overlay, formats
-│   │   ├── DownloadModal.tsx # Real job progress modal & delivery
+│   │   ├── ResultCard.tsx    # Video info, quick resolution picker, trim tool, formats
+│   │   ├── DownloadModal.tsx # Animated progress modal & delivery
 │   │   ├── ContactModal.tsx  # Functional contact support form
 │   │   ├── LegalModals.tsx   # Terms of Service & Privacy Policy
 │   │   ├── Features.tsx      # Platform capabilities showcase
 │   │   └── FAQ.tsx           # Common user questions & answers
 │   ├── services/
 │   │   ├── api.ts            # Frontend API client (inspect, upload, contact)
-│   │   ├── downloader.ts     # Asynchronous job polling & browser download trigger
+│   │   ├── downloader.ts     # Job polling & browser download trigger
 │   │   └── i18n.ts           # 20-language translation dictionary
 │   └── App.tsx               # Main state management & modal routing
 ├── public/
@@ -52,30 +58,51 @@ DownloadKar/
 └── AUDIT_REPORT.md           # Full technical audit report
 ```
 
+### Processing Pipeline
+
+```
+URL ──► validateOutboundUrl (SSRF shield)
+     ──► direct media file? ──► FFmpeg directly
+     ──► platform page?     ──► yt-dlp download (resolution-capped, H.264 preferred,
+                              cookie fallback for login-walled sites)
+                          ──► ffprobe duration/codec inspection
+                          ──► passthrough? ──► deliver file instantly
+                          ──► else FFmpeg transcode/trim/overlay ──► deliver
+```
+
 ---
 
 ## 📡 API Endpoints
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/api/health` | Health check returning server uptime, FFmpeg status, and environment. |
-| `POST` | `/api/media/inspect` | Safely inspects media URLs via oEmbed or ffprobe with SSRF protection. |
-| `POST` | `/api/upload` | Uploads user media file (Max 150MB) for processing. |
-| `POST` | `/api/convert` | Starts an asynchronous FFmpeg conversion/transcode job. |
-| `GET` | `/api/jobs/:id` | Polls job processing progress (0-100%) and current step. |
-| `DELETE` | `/api/jobs/:id` | Cancels an ongoing conversion job and cleans up temporary files. |
-| `GET` | `/api/jobs/:id/download` | Delivers the generated media file as a secure attachment. |
-| `POST` | `/api/contact` | Handles user contact messages and returns an inquiry receipt ID. |
+| `GET` | `/api/health` | Health check: uptime, engine info, environment. |
+| `POST` | `/api/media/inspect` | Resolves metadata via yt-dlp / Vimeo v2 API / oEmbed / ffprobe. Returns title, author, thumbnail, duration, and available resolutions. |
+| `POST` | `/api/upload` | Uploads a media file (max 100 MB) for processing. |
+| `POST` | `/api/convert` | Starts an async download/convert job (`sourceType`, `url`/`fileId`, `targetFormat`, `quality`, `trimRange`, `pictureOverlay`). |
+| `GET` | `/api/jobs/:id` | Polls job status, progress %, current step, and download URL. |
+| `POST` | `/api/jobs/:id/cancel` | Cancels a running job. |
+| `GET` | `/api/jobs/:id/download` | Streams the finished media file as an attachment. |
+| `POST` | `/api/contact` | Receives support inquiries, returns a reference ID. |
 
 ---
 
 ## 🔒 Security Hardening
 
-1. **SSRF Prevention**: All external URLs passed to `/api/media/inspect` or `/api/convert` are verified before fetching. Hostnames resolving to loopback (`127.0.0.0/8`, `::1`), private ranges (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), or cloud metadata endpoints (`169.254.169.254`) are immediately rejected.
-2. **Command Injection Prevention**: FFmpeg is invoked exclusively via `child_process.spawn()` with isolated string argument arrays. No shell execution (`exec` / `sh -c`) is permitted.
-3. **Path Traversal Protection**: All user-provided filenames and job IDs are sanitized using regex validation, confining all operations to `/tmp/downloadkar_jobs/`.
-4. **Rate Limiting**: In-memory rate limiting restricts each client IP to 60 requests per minute.
-5. **Data Privacy**: All uploaded user files, frames, and transcoded outputs are deleted after 15 minutes.
+1. **SSRF Prevention**: Outbound URLs are DNS-resolved and rejected if they point to loopback, private, link-local, or cloud metadata ranges.
+2. **Command Injection Prevention**: FFmpeg and yt-dlp are invoked via `child_process.spawn()` with argument arrays — no shell execution.
+3. **Path Traversal Protection**: Filenames and job IDs are sanitized; all file operations are confined to the temp jobs directory.
+4. **Rate Limiting**: 60 requests/minute per IP on `/api/*`.
+5. **Data Privacy**: Uploaded files, downloaded sources, and outputs are auto-deleted after ~15 minutes.
+
+---
+
+## 📋 Requirements
+
+- **Node.js 20+** and npm
+- **FFmpeg + ffprobe** on `PATH` (e.g. `winget install Gyan.FFmpeg`)
+- **yt-dlp** on `PATH` (e.g. `winget install yt-dlp.yt-dlp`) — required for platform downloads
+- For login-walled platforms (Facebook, Instagram, Vimeo): the corresponding site session in a local browser; **close the browser** before downloading so yt-dlp can read its cookies
 
 ---
 
@@ -83,17 +110,26 @@ DownloadKar/
 
 ### Development
 ```bash
+npm install
 npm run dev
-# Starts full-stack server on http://localhost:3000 with Vite middleware
+# Full-stack server on http://localhost:3000 (Vite middleware)
 ```
 
-### Production Build
+### Production
 ```bash
 npm run build
 npm start
 ```
 
-### Linting & Type Checking
+### Lint / Type Check
 ```bash
-npm run lint
+npm run lint   # tsc --noEmit
 ```
+
+---
+
+## ⚠️ Platform Notes
+
+- **YouTube / TikTok / most sites**: work without login.
+- **Facebook, Instagram, Vimeo**: require an authenticated session — the app auto-retries with your browser cookies. Fully closing the browser before downloading is required on Windows.
+- Downloads are for personal use only; respect each platform's Terms of Service and copyright.

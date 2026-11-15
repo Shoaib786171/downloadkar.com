@@ -19,6 +19,7 @@ import { fileURLToPath } from 'url';
 import { initTempDirectories, startCleanupTimer, UPLOAD_DIR, OUTPUT_DIR, TEMP_BASE_DIR } from './src/server/cleanup';
 import { validateOutboundUrl, sanitizeSafeFilename, ServerRateLimiter } from './src/server/security';
 import { probeMedia } from './src/server/ffmpeg';
+import { fetchYtDlpMetadata, isDirectMediaUrl } from './src/server/ytdlp';
 import { jobManager } from './src/server/jobs';
 
 dotenv.config();
@@ -208,6 +209,90 @@ app.post('/api/media/inspect', async (req: Request, res: Response) => {
 
     const targetUrl = validation.sanitizedUrl;
 
+    // 0. Vimeo fast path — the legacy v2 API exposes public video metadata
+    // (title, duration, resolution) without any login. oEmbed is the fallback.
+    if (/vimeo\.com/i.test(targetUrl)) {
+      const vimeoIdMatch = targetUrl.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+      if (vimeoIdMatch) {
+        try {
+          const resp = await fetch(`https://vimeo.com/api/v2/video/${vimeoIdMatch[1]}.json`, {
+            headers: { 'User-Agent': 'Mozilla/5.0' },
+          });
+          if (resp.ok) {
+            const arr = await resp.json();
+            const v = Array.isArray(arr) ? arr[0] : null;
+            if (v && v.title) {
+              const dur = typeof v.duration === 'number' ? v.duration : undefined;
+              const fmtDur = (s: number) => {
+                const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = Math.floor(s % 60);
+                return h > 0
+                  ? `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`
+                  : `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
+              };
+              const srcH = typeof v.height === 'number' ? v.height : undefined;
+              const ladder = [1080, 720, 540, 480, 360, 240].filter((h) => srcH !== undefined && h <= srcH);
+              return res.json({
+                platform: 'vimeo',
+                platformName: 'Vimeo',
+                title: v.title,
+                author: v.user_name,
+                authorUrl: v.user_url,
+                thumbnailUrl: v.thumbnail_large || v.thumbnail_medium || v.thumbnail_small,
+                durationFormatted: dur !== undefined ? fmtDur(dur) : undefined,
+                durationSeconds: dur,
+                availableResolutions: ladder.length ? ladder : undefined,
+                isPlatformRestricted: false,
+              });
+            }
+          }
+        } catch {}
+      }
+      try {
+        const oembedUrl = `https://vimeo.com/api/oembed.json?url=${encodeURIComponent(targetUrl)}`;
+        const resp = await fetch(oembedUrl);
+        if (resp.ok) {
+          const data = await resp.json();
+          return res.json({
+            platform: 'vimeo',
+            platformName: 'Vimeo',
+            title: data.title,
+            author: data.author_name,
+            authorUrl: data.author_url,
+            thumbnailUrl: data.thumbnail_url,
+            isPlatformRestricted: false,
+          });
+        }
+      } catch {}
+    }
+
+    // 1. yt-dlp platform resolution (YouTube, Facebook, Instagram, TikTok, X, etc.)
+    if (!isDirectMediaUrl(targetUrl) && !/vimeo\.com/i.test(targetUrl)) {
+      const meta = await fetchYtDlpMetadata(targetUrl);
+      if (meta && meta.title) {
+        const platformNames: Record<string, string> = {
+          youtube: 'YouTube',
+          facebook: 'Facebook',
+          instagram: 'Instagram',
+          tiktok: 'TikTok',
+          vimeo: 'Vimeo',
+          twitter: 'X (Twitter)',
+        };
+        const key = (meta.extractorKey || '').toLowerCase();
+        return res.json({
+          platform: 'yt-dlp',
+          platformName: platformNames[key] || meta.platformName || 'Online Media',
+          title: meta.title,
+          author: meta.author,
+          authorUrl: meta.authorUrl,
+          thumbnailUrl: meta.thumbnailUrl,
+          durationFormatted: meta.durationFormatted,
+          durationSeconds: meta.durationSeconds,
+          availableResolutions: meta.resolutions,
+          isPlatformRestricted: false,
+        });
+      }
+    }
+
     // 1. YouTube oEmbed
     if (/youtube\.com|youtu\.be/i.test(targetUrl)) {
       try {
@@ -230,28 +315,7 @@ app.post('/api/media/inspect', async (req: Request, res: Response) => {
       } catch {}
     }
 
-    // 2. Vimeo oEmbed
-    if (/vimeo\.com/i.test(targetUrl)) {
-      try {
-        const oembedUrl = `https://vimeo.com/api/oembed.json?url=${encodeURIComponent(targetUrl)}`;
-        const resp = await fetch(oembedUrl);
-        if (resp.ok) {
-          const data = await resp.json();
-          return res.json({
-            platform: 'vimeo',
-            platformName: 'Vimeo',
-            title: data.title,
-            author: data.author_name,
-            authorUrl: data.author_url,
-            thumbnailUrl: data.thumbnail_url,
-            isPlatformRestricted: true,
-            complianceNotice: 'Vimeo media requires license or Creative Commons permission for offline export.',
-          });
-        }
-      } catch {}
-    }
-
-    // 3. Direct Public Media URL Inspection
+    // 2. Direct Public Media URL Inspection
     if (/\.(mp4|webm|mp3|wav|ogg|mov)(\?.*)?$/i.test(targetUrl)) {
       try {
         const probe = await probeMedia(targetUrl);

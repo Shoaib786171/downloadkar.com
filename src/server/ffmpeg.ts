@@ -46,6 +46,12 @@ export interface ConvertOptions {
     opacity?: number; // 0.1 to 1.0
     timing?: 'all' | 'intro' | 'outro';
   };
+  /**
+   * When true, skip re-encoding and remux streams directly (-c copy).
+   * Only set when the source already satisfies the requested output
+   * (compatible codec, resolution within the requested cap, no trim/overlay).
+   */
+  allowStreamCopy?: boolean;
 }
 
 /**
@@ -139,10 +145,16 @@ export function buildFFmpegArgs(options: ConvertOptions, totalInputDuration: num
   args: string[];
   expectedDuration: number;
 } {
-  const { inputPath, outputPath, targetFormat, quality, trimRange, pictureOverlay } = options;
+  const { inputPath, outputPath, targetFormat, quality, trimRange, pictureOverlay, allowStreamCopy } = options;
   const args: string[] = ['-y']; // Overwrite output
 
   let expectedDuration = totalInputDuration;
+
+  // Fast path: remux without re-encoding when the source already fits.
+  if (allowStreamCopy && targetFormat === 'mp4' && !(trimRange && trimRange.enabled)) {
+    args.push('-i', inputPath, '-c', 'copy', '-movflags', '+faststart', outputPath);
+    return { args, expectedDuration: expectedDuration || 60 };
+  }
 
   // 1. Trimming input options
   if (trimRange && trimRange.enabled) {

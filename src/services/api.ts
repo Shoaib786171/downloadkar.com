@@ -335,11 +335,53 @@ export async function fetchVideoData(
       if (inspectData.title) {
         const id = extractVideoId(sanitizedUrl, platform) || `media_${Date.now().toString(36)}`;
         const base = buildMockVideoResponse(sanitizedUrl, platform, id);
+
+        // When yt-dlp reports real available resolutions, offer the user an
+        // actual quality picker capped at 1080p instead of mock formats.
+        const resList: number[] = Array.isArray(inspectData.availableResolutions)
+          ? inspectData.availableResolutions.filter((h: any) => typeof h === 'number' && h > 0)
+          : [];
+        let formats = base.formats;
+        if (resList.length > 0) {
+          const durSec = typeof inspectData.durationSeconds === 'number' && inspectData.durationSeconds > 0
+            ? inspectData.durationSeconds
+            : 60;
+          let heights = [...new Set(resList.filter((h) => h <= 1080))]
+            .sort((a, b) => b - a)
+            .slice(0, 5);
+          if (heights.length === 0) heights = [1080];
+
+          const videoFormats: VideoFormatOption[] = heights.map((h) => {
+            const mbps = h >= 1080 ? 5 : h >= 720 ? 2.5 : h >= 480 ? 1.2 : 0.7;
+            const sizeMB = Math.max(1, Math.round(((durSec * mbps) / 8) * 10) / 10);
+            return {
+              id: `res-${h}`,
+              label: `${h}p MP4`,
+              quality: `${h}p`,
+              type: 'video' as const,
+              extension: 'mp4' as const,
+              fileSize: `~${sizeMB} MB`,
+              hasAudio: true,
+            };
+          });
+
+          const audioFormats: VideoFormatOption[] = [
+            { id: 'au-320', label: '320 kbps MP3', quality: '320kbps', type: 'audio', extension: 'mp3', fileSize: `~${Math.round((durSec * 320) / 8000)} MB` },
+            { id: 'au-256', label: '256 kbps MP3', quality: '256kbps', type: 'audio', extension: 'mp3', fileSize: `~${Math.round((durSec * 256) / 8000)} MB` },
+            { id: 'au-192', label: '192 kbps MP3', quality: '192kbps', type: 'audio', extension: 'mp3', fileSize: `~${Math.round((durSec * 192) / 8000)} MB` },
+            { id: 'au-128', label: '128 kbps MP3', quality: '128kbps', type: 'audio', extension: 'mp3', fileSize: `~${Math.round((durSec * 128) / 8000)} MB` },
+          ];
+
+          formats = [...videoFormats, ...audioFormats];
+        }
+
         return {
           ...base,
           title: inspectData.title || base.title,
           author: inspectData.author || base.author,
           thumbnailUrl: inspectData.thumbnailUrl || base.thumbnailUrl,
+          duration: inspectData.durationFormatted || base.duration,
+          formats,
           isPlatformRestricted: inspectData.isPlatformRestricted,
           complianceNotice: inspectData.complianceNotice,
         };
