@@ -11,6 +11,7 @@
  */
 
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
+import { ytDlpBin } from './binaries';
 
 export interface YtDlpMetadata {
   title?: string;
@@ -78,7 +79,7 @@ function runYtDlpOnce(
     timeoutMs?: number;
   }
 ): { promise: Promise<{ code: number | null; stdout: string; stderrTail: string }>; cancel: () => void } {
-  const proc: ChildProcessWithoutNullStreams = spawn('yt-dlp', args);
+  const proc: ChildProcessWithoutNullStreams = spawn(ytDlpBin(), args);
   let stdout = '';
   let stderrTail = '';
   let isCancelled = false;

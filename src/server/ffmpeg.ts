@@ -13,6 +13,7 @@
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import { ffmpegBin, ffprobeBin } from './binaries';
 
 export interface MediaProbeInfo {
   formatName: string;
@@ -94,7 +95,7 @@ export async function probeMedia(filePath: string): Promise<MediaProbeInfo> {
       filePath,
     ];
 
-    const proc = spawn('ffprobe', args);
+    const proc = spawn(ffprobeBin(), args);
     let stdout = '';
     let stderr = '';
 
@@ -253,7 +254,7 @@ export function runFFmpegJob(
   cancel: () => void;
 } {
   const { args, expectedDuration } = buildFFmpegArgs(options, totalDuration);
-  let proc: ChildProcessWithoutNullStreams | null = spawn('ffmpeg', args);
+  let proc: ChildProcessWithoutNullStreams | null = spawn(ffmpegBin(), args);
   let isCancelled = false;
 
   const cancel = () => {
