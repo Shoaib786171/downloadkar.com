@@ -1,7 +1,11 @@
 import fs from 'fs';
+import path from 'path';
 import { createRequire } from 'module';
+import { fileURLToPath } from 'url';
 
 const require = createRequire(import.meta.url);
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const localBin = path.join(projectRoot, 'bin', process.platform === 'win32' ? 'yt-dlp.exe' : 'yt-dlp');
 
 function tryRequireString(pkg: string): string | null {
   try {
@@ -23,6 +27,10 @@ function tryRequireYtDlp(): string | null {
   }
 }
 
+function localYtDlp(): string | null {
+  return fs.existsSync(localBin) ? localBin : null;
+}
+
 export function ffmpegBin(): string {
   return (
     process.env.FFMPEG_PATH ||
@@ -42,6 +50,7 @@ export function ffprobeBin(): string {
 export function ytDlpBin(): string {
   return (
     process.env.YTDLP_PATH ||
+    localYtDlp() ||
     tryRequireYtDlp() ||
     'yt-dlp'
   );
