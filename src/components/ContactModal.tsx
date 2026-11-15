@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Send, CheckCircle2, MessageSquare, Loader2, AlertCircle } from 'lucide-react';
 import { sanitizeText } from '../services/security';
+import { apiUrl } from '../services/http';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -30,7 +31,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     setErrorMessage(null);
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch(apiUrl('/api/contact'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

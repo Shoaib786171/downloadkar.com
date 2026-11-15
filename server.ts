@@ -34,6 +34,7 @@ startCleanupTimer();
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const isProd = process.env.NODE_ENV === 'production';
+const corsOrigin = process.env.CORS_ORIGIN?.trim();
 
 // Rate Limiter
 const rateLimiter = new ServerRateLimiter(60, 60000);
@@ -41,6 +42,22 @@ const rateLimiter = new ServerRateLimiter(60, 60000);
 // Basic middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Allow a separately hosted Hostinger frontend to call this Node.js backend.
+// Leave CORS_ORIGIN unset for same-origin deployments.
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const origin = req.headers.origin;
+  if (corsOrigin && origin === corsOrigin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  }
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(corsOrigin && origin === corsOrigin ? 204 : 403);
+  }
+  next();
+});
 
 // Multer Storage Configuration
 const storage = multer.diskStorage({

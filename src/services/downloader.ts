@@ -16,6 +16,7 @@ import {
   VideoMetadata,
 } from '../types/downloader';
 import { sanitizeFilenameSecure } from './security';
+import { apiUrl } from './http';
 
 /**
  * Sanitizes download filename with optional trim identifier
@@ -99,7 +100,7 @@ export async function startConversionJob(
       : undefined,
   };
 
-  const response = await fetch('/api/convert', {
+  const response = await fetch(apiUrl('/api/convert'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -117,7 +118,7 @@ export async function startConversionJob(
  * Polls the backend for real job status and FFmpeg progress percentage
  */
 export async function pollJobStatus(jobId: string): Promise<JobStatusResponse> {
-  const response = await fetch(`/api/jobs/${encodeURIComponent(jobId)}`);
+  const response = await fetch(apiUrl(`/api/jobs/${encodeURIComponent(jobId)}`));
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
     throw new Error(err.error || `Failed to fetch status for job ${jobId}`);
@@ -130,7 +131,7 @@ export async function pollJobStatus(jobId: string): Promise<JobStatusResponse> {
  */
 export async function cancelConversionJob(jobId: string): Promise<void> {
   try {
-    await fetch(`/api/jobs/${encodeURIComponent(jobId)}/cancel`, { method: 'POST' });
+    await fetch(apiUrl(`/api/jobs/${encodeURIComponent(jobId)}/cancel`), { method: 'POST' });
   } catch {
     // Ignore network drop on cancel
   }

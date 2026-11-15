@@ -121,6 +121,16 @@ npm run build
 npm start
 ```
 
+### Hostinger Website hosting (without a VPS)
+
+Run the backend as a Hostinger **Node.js App** and set its startup file to
+`server.js`. Build the frontend with `VITE_API_BASE_URL` set to the Node.js
+app URL, for example `https://api.example.com`, and set the backend
+`CORS_ORIGIN` to the website URL, for example `https://example.com`.
+The frontend then sends conversion requests to the Node.js app instead of
+calling `/api/*` on the static website host. The Node.js app must run
+`npm install` and `npm run build` during deployment so `dist/` is present.
+
 ### Lint / Type Check
 ```bash
 npm run lint   # tsc --noEmit

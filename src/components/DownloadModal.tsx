@@ -19,6 +19,7 @@ import {
   sanitizeFilename,
   triggerBrowserDownload,
 } from '../services/downloader';
+import { apiUrl } from '../services/http';
 
 interface DownloadModalProps {
   format: VideoFormatOption;
@@ -101,7 +102,7 @@ export default function DownloadModal({
               if (pollTimerRef.current) clearInterval(pollTimerRef.current);
               setStatus('completed');
               setProgress(100);
-              const realUrl = job.downloadUrl || `/api/jobs/${initRes.jobId}/download`;
+              const realUrl = apiUrl(job.downloadUrl || `/api/jobs/${initRes.jobId}/download`);
               setDownloadUrl(realUrl);
 
               // Trigger authentic browser file download

@@ -70,6 +70,7 @@
 
 import { BackendApiConfig, PlatformType, VideoFormatOption, VideoMetadata } from '../types/downloader';
 import { validateAndSanitizeUrl, sanitizeText, MAX_URL_LENGTH } from './security';
+import { apiUrl } from './http';
 
 // High-fidelity generated sample preview thumbnails
 export const SAMPLE_THUMBNAILS = {
@@ -183,7 +184,7 @@ export async function uploadUserMediaFile(file: File): Promise<VideoMetadata> {
   const formData = new FormData();
   formData.append('mediaFile', file);
 
-  const response = await fetch('/api/upload', {
+  const response = await fetch(apiUrl('/api/upload'), {
     method: 'POST',
     body: formData,
   });
@@ -284,7 +285,7 @@ export async function fetchVideoData(
 
   // 2. Query our real backend /api/media/inspect endpoint
   try {
-    const inspectResponse = await fetch('/api/media/inspect', {
+    const inspectResponse = await fetch(apiUrl('/api/media/inspect'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url: sanitizedUrl }),

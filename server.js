@@ -777,9 +777,23 @@ startCleanupTimer();
 var app = express();
 var PORT = parseInt(process.env.PORT || "3000", 10);
 var isProd = process.env.NODE_ENV === "production";
+var corsOrigin = process.env.CORS_ORIGIN?.trim();
 var rateLimiter = new ServerRateLimiter(60, 6e4);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (corsOrigin && origin === corsOrigin) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  }
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(corsOrigin && origin === corsOrigin ? 204 : 403);
+  }
+  next();
+});
 var storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
     cb(null, UPLOAD_DIR);
